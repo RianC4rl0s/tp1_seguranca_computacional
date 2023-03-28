@@ -5,7 +5,6 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Base64;
-
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
@@ -17,13 +16,13 @@ import javax.crypto.spec.SecretKeySpec;
 
 public class AES extends Algoritmo {
 
-  private KeyGenerator keyGenerator;
-  private SecretKey chave;
+  static KeyGenerator keyGenerator;
+  static SecretKey chave;
   private IvParameterSpec vi;
   private String mensagem;
   private String mensagemCifrada;
 
-  public String keyGen(int size) {
+  public static String keyGen(int size) {
     try {
       keyGenerator = KeyGenerator.getInstance("AES");
     } catch (NoSuchAlgorithmException e) {
@@ -32,12 +31,16 @@ public class AES extends Algoritmo {
     keyGenerator.init(size);
     chave = keyGenerator.generateKey();
     return Base64.getEncoder().encodeToString(chave.getEncoded());
-    // return chave;
   }
 
   public String encripta(String msg, String key) {
     byte[] decodedKey = Base64.getDecoder().decode(key);
-    SecretKey originalKey = new SecretKeySpec(decodedKey, 0, decodedKey.length, "AES");
+    SecretKey originalKey = new SecretKeySpec(
+      decodedKey,
+      0,
+      decodedKey.length,
+      "AES"
+    );
 
     //byte[] bytesVI;
     byte[] bytesMensagemCifrada;
@@ -54,8 +57,7 @@ public class AES extends Algoritmo {
       cifrador.init(Cipher.ENCRYPT_MODE, originalKey, vi);
       bytesMensagemCifrada = cifrador.doFinal(mensagem.getBytes());
       mensagemCifrada = codificar(bytesMensagemCifrada);
-      System.out.println(
-          ">> Mensagem cifrada = " + mensagemCifrada);
+      System.out.println(">> Mensagem cifrada = " + mensagemCifrada);
     } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
       e.printStackTrace();
     } catch (InvalidKeyException | InvalidAlgorithmParameterException e) {
@@ -65,22 +67,30 @@ public class AES extends Algoritmo {
     }
     return mensagemCifrada;
   }
+
   public String decripta(String msg, String key) {
     byte[] decodedKey = Base64.getDecoder().decode(key);
-    SecretKey originalKey = new SecretKeySpec(decodedKey, 0, decodedKey.length, "AES");
+    SecretKey originalKey = new SecretKeySpec(
+      decodedKey,
+      0,
+      decodedKey.length,
+      "AES"
+    );
 
     byte[] bytesMensagemCifrada = decodificar(msg);
     Cipher decriptador;
     try {
       decriptador = Cipher.getInstance("AES/CBC/PKCS5Padding");
-      decriptador
-          .init(Cipher.DECRYPT_MODE, originalKey, vi);
+      decriptador.init(Cipher.DECRYPT_MODE, originalKey, vi);
       byte[] bytesMensagemDecifrada = decriptador.doFinal(bytesMensagemCifrada);
       String mensagemDecifrada = new String(bytesMensagemDecifrada);
       mensagem = mensagemDecifrada;
-
-    } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException
-        | InvalidAlgorithmParameterException e) {
+    } catch (
+      NoSuchAlgorithmException
+      | NoSuchPaddingException
+      | InvalidKeyException
+      | InvalidAlgorithmParameterException e
+    ) {
       e.printStackTrace();
     } catch (IllegalBlockSizeException e) {
       e.printStackTrace();
@@ -92,21 +102,19 @@ public class AES extends Algoritmo {
 
   private String codificar(byte[] bytesCifrados) {
     String mensagemCodificada = Base64
-        .getEncoder()
-        .encodeToString(bytesCifrados);
+      .getEncoder()
+      .encodeToString(bytesCifrados);
     return mensagemCodificada;
   }
 
   private byte[] decodificar(String mensagemCodificada) {
-    byte[] bytesCifrados = Base64
-        .getDecoder()
-        .decode(mensagemCodificada);
+    byte[] bytesCifrados = Base64.getDecoder().decode(mensagemCodificada);
     return bytesCifrados;
   }
+
   public static IvParameterSpec gerarVI() {
     byte[] vi = new byte[16];
     new SecureRandom().nextBytes(vi);
     return new IvParameterSpec(vi);
-   
-   }
+  }
 }

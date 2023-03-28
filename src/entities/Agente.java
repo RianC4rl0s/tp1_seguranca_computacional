@@ -1,48 +1,44 @@
 package entities;
 
-import java.util.ArrayList;
-import java.util.List;
+import algoritmos.Algoritmo;
 
 public class Agente {
-    int id;
-    String msg;
 
-    private static Mensageiro mensageiro;
+  int id;
+  private Algoritmo crypo;
+  private String key;
 
-    private List<Mensage> eviadas;
-    private List<Mensage> recebidas;
+  public Agente(int id, Algoritmo crypo, String key) {
+    this.id = id;
+    this.crypo = crypo;
+    this.key = key;
+  }
 
-    public Agente(int id) {
-        this.id = id;
-        this.eviadas = new ArrayList<>();
-        this.recebidas = new ArrayList<>();
-    }
+  public Mensage enviarMsg(String msg) {
+    System.out.println();
+    System.out.println("Agente " + id + " - encriptar msg >>>");
+    System.out.println(msg);
 
-    public String getMsg() {
-        return msg;
-    }
+    String msgCrypo = crypo.encripta(msg, key);
 
-    public void setMsg(String msg) {
-        this.msg = msg;
-    }
+    System.out.println("Agente " + id + " - enviar msg >>>");
+    System.out.println(msgCrypo);
 
-    public static void setMensageiro(Mensageiro mensageiro) {
-        Agente.mensageiro = mensageiro;
-    }
-    public Mensageiro getMensageiro(){
-        return mensageiro;
-    }
-    public void sendTo(int idReceptor,String sendMsg){
-        mensageiro.sendTo(this.id,idReceptor, sendMsg);
+    return new Mensage(id, msgCrypo);
+  }
 
-    }
-    public void sendToAll( String sendMsg){
-        Agente.mensageiro.sendAll(this.id,sendMsg);
-    }
-    public List<Mensage> getEnviadas(){
-        return eviadas;
-    }
-    public List<Mensage> getRecebidas(){
-        return recebidas;
-    }
+  public void receberMsg(Mensage m) {
+    System.out.println();
+    System.out.println(
+      "Agente " + id + " - receber msg do Agente " + m.getIdAgente()
+    );
+    System.out.println("Agente " + id + " - receber msg >>>");
+    System.out.println(m.getMsg());
+
+    String msg = crypo.decripta(m.getMsg(), key);
+
+    System.out.println("Agente " + id + " - descriptando msg >>>");
+    System.out.println(msg);
+    System.out.println();
+  }
 }
