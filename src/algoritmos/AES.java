@@ -57,7 +57,7 @@ public class AES extends Algoritmo {
       cifrador.init(Cipher.ENCRYPT_MODE, originalKey, vi);
       bytesMensagemCifrada = cifrador.doFinal(mensagem.getBytes());
       mensagemCifrada = codificar(bytesMensagemCifrada);
-      System.out.println(">> Mensagem cifrada = " + mensagemCifrada);
+      //System.out.println(">> Mensagem cifrada = " + mensagemCifrada);
     } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
       e.printStackTrace();
     } catch (InvalidKeyException | InvalidAlgorithmParameterException e) {
